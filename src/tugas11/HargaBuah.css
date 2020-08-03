@@ -1,0 +1,25 @@
+body {
+    font-family: serif;
+}
+table {
+    width: 700px;
+    border: 2px solid black;
+}
+th, td {
+    border: 1px solid white;
+}
+
+th {
+    background-color: #aaa;
+    text-align: center;
+    font-weight: bold;
+}
+
+td {
+    background-color: #FF7F50;
+    text-align: left;
+}
+
+table {
+    margin: 10px auto 10px auto;
+}
