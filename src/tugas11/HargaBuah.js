@@ -21,9 +21,9 @@ class TableData extends React.Component {
     render() {
         return (
             <tr>
-                <td>{this.props.nama}</td>
-                <td>{this.props.harga}</td>
-                <td>{this.props.berat}</td>
+                <td>{this.props.data.nama}</td>
+                <td>{this.props.data.harga}</td>
+                <td>{this.props.data.berat/1000} kg</td>
             </tr>
         )
     }
@@ -46,7 +46,7 @@ class HargaBuah extends React.Component {
             <TableHeader />
             {dataHargaBuah.map(data => {
                return(
-                <TableData nama={data.nama} harga={data.harga} berat={data.berat}/>
+                <TableData data={data}/>
                ) 
             })}
             </table>
