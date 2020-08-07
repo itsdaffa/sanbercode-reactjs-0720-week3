@@ -32,48 +32,50 @@ class List extends Component {
             indexofForm: -1
         }
 
-        this.handleChange = this.handleChange.bind(this)
-        this.handleSubmit = this.handleSubmit.bind(this)
-        this.handleEdit = this.handleEdit.bind(this)
-        this.handleDelete = this.handleDelete.bind(this)
+        this.handleChange = this.handleChange.bind(this);
+        this.handleEdit = this.handleEdit.bind(this);
+        this.handleDelete = this.handleDelete.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
 
     }
 
-    handleChange(e) {
+    handleChange(event) {
         let input = {...this.state.input}
-        input[e.target.name] = e.target.value
-        this.setState({
-            input
-        })
+        input[event.target.name] = event.target.value
+        this.setState(
+            {input}
+        )
     }
 
-    handleSubmit(e){
-		e.preventDefault()
+    handleSubmit(event) {
+        event.preventDefault();
 
-		let input = this.state.input
-		if(input['nama'].replace(/\s/g, '') !== "" && input['harga'].toString().replace(/\s/g, '') !== "" && input['berat'].toString().replace(/\s/g, '') !== "" ){
-			let newDaftarBuah = this.state.dataHargaBuah
-			let index = this.state.indexOfForm
-			console.log(index)
-			if (index === -1){
-			  newDaftarBuah = [...newDaftarBuah, input]
-			}else{
-			  newDaftarBuah[index] = input
-			}
-			this.setState({
-				dataHargaBuah: newDaftarBuah,
-				input :{
-					nama:"",
-					harga: "",
-					berat: ""
-				},
-				indexOfForm: -1
-			})
-		}
-      }
+        let input = this.state.input;
+        if (input['nama'].replace(/\s/g, "") !== "" && input['harga'].toString().replace(/\s/g, "") !== "" && input['berat'].toString().replace(/\s/g, "") !== "") {
+            let newDaftarBuah = this.state.dataHargaBuah
+            let index = this.state.indexofForm
+            console.log(index)
+            if (index === -1) {
+                newDaftarBuah = [...newDaftarBuah, input]
+            } else {
+                newDaftarBuah[index] = input
+            }
 
-      handleEdit(e){
-		let index = e.target.value
+            this.setState(
+                {dataHargaBuah: newDaftarBuah,
+                input: {
+                    nama: "",
+                    harga: "",
+                    berat: ""
+                },
+                
+                indexofForm: -1}
+            )
+        }
+    }
+
+	handleEdit(event) {
+		let index = event.target.value
 		let buah = this.state.dataHargaBuah[index]
 		this.setState({
 			input :{
@@ -83,22 +85,25 @@ class List extends Component {
 			}, 
 			indexOfForm: index
 		})
-	  }
-	
-	  handleDelete(e){
-		let index = e.target.value
-		let newDaftarBuah = this.state.dataHargaBuah
-		let editedDaftarBuah = newDaftarBuah[this.state.indexOfForm]
-		newDaftarBuah.splice(index, 1)
-	
-		if (editedDaftarBuah !== undefined){
-		  var newIndex = newDaftarBuah.findIndex((el) => el === editedDaftarBuah)
-		  this.setState({dataHargaBuah: newDaftarBuah, indexOfForm: newIndex})
-		}else{
-		  this.setState({dataHargaBuah: newDaftarBuah})
-		}
-	  }
-      
+	}
+
+    handleDelete(event) {
+        let index = event.target.value
+        let newDaftarBuah = this.state.dataHargaBuah
+        let editedDaftarBuah = newDaftarBuah[this.state.indexofForm]
+        newDaftarBuah.splice(index, 1)
+
+        if (editedDaftarBuah !== undefined) {
+            let newIndex = newDaftarBuah.findIndex((el) => el === editedDaftarBuah)
+            this.setState({dataHargaBuah: newDaftarBuah, indexofForm: newIndex})
+        } else {
+            this.setState({dataHargaBuah: newDaftarBuah})
+        }
+
+    }
+
+    
+    
 
     render() {
         return (
@@ -131,24 +136,26 @@ class List extends Component {
                     
                  })}  
             </table>
-            <div id="form-content">
+
             <form onSubmit={this.handleSubmit}>
                  <label htmlFor="nama">Nama Buah: </label>
-                 <input type="text" id="nama" name='nama' value={this.state.input.nama} onChange={this.handleChange} placeholder="Nama Buah"/>
+                 <input type="text" id="nama" name="nama" value={this.state.input.nama} onChange={this.handleChange} placeholder="Nama Buah"/>
                  <br/><br/>
                  <label htmlFor="harga">Harga: </label>
-                 <input type="text" id="harga" name='harga' value={this.state.input.harga} onChange={this.handleChange} placeholder="Harga"/>
+                 <input type="text" id="harga" name="harga" value={this.state.input.harga} onChange={this.handleChange} placeholder="Harga"/>
                  <br /><br/>
                  <label htmlFor="berat">Berat: </label>
                  <input type="text" id="berat" name='berat' value={this.state.input.berat} onChange={this.handleChange} placeholder="Berat"/>
                  <br/><br/>
                  <input type="submit" value="Kirim!" />
             </form>
-            </div>
            
            </>
         )
     }
+
+
 }
+
 
 export default List;
