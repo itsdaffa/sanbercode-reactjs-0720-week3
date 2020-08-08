@@ -13,13 +13,16 @@ function App() {
     <div className="App" style={{width: 'fit-content', margin: 'auto'}}>
       {/* Tugas Hari Ke-1 */}
       {/* <HargaBuah /> */}
+      
       {/* Tugas Hari Ke-2 */}
       <div style={{display: "flex", justifyContent: "space-between"}}>
       <Clock />
       <Timer />
       </div>
+
       {/*Tugas Hari Ke-3 */}
-      <List />
+      {/* <List /> */}
+
       {/* Tugas Hari Ke- 4 */}
       <ListInFunc />
       

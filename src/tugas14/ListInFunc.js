@@ -15,85 +15,87 @@ class Cell extends Component {
 }
 
 const ListInFunc = () => {
-    const [dataHargaBuah, setDataHargaBuah] = useState([
-        {name: "Semangka", price: 10000, weight: 1000}
-    ])
-    const [input, setInput] = useState({nama: "", harga: "", berat:""})
-    const [indexOfForm, setIndexOfForm] = useState(-1)
-    const [statusForm, setStatusForm] = useState("create")
-	const [selectId, setSelectedId] = useState(0)
-
+    const [dataHargaBuah, setDataHargaBuah] = useState(null)
+    const [input, setInput] = useState({name: "", price: "", weight:""})
+    const [selectedId, setSelectedId]  =  useState(0)
+    const [statusForm, setStatusForm]  =  useState("CREATE")
 
 	const handleChange = (event) => {
 		const { name, value } = event.target;
         setInput(prevState => ({
             ...prevState,
             [name]: value
-		}))}
-
-        const handleSubmit = (event) => {
-            event.preventDefault()
-            if(input['name'].replace(/\s/g, '') !== "" && input['price'].toString().replace(/\s/g, '') !== "" && input['weight'].toString().replace(/\s/g, '') !== "" ){
-                if(statusForm === "create"){
-                    axios.post(`http://backendexample.sanbercloud.com/api/fruits`, input)
-                        .then(res => {
-                            console.log(res.data)
-                            setDataHargaBuah([...dataHargaBuah, {name: res.data.name, price: res.data.price, weight: res.data.weight}])
-                        })
-                    } else if(statusForm === "edit"){
-                        axios.put(`http://backendexample.sanbercloud.com/api/fruits/${selectId}`, input)
-                            .then(res => {
-                                let buah = dataHargaBuah.find(el => el.id === selectId)
-                                buah['name'] = input.name
-                                buah['price'] = input.price
-                                buah['weight'] = input.weight
-                                setDataHargaBuah([...dataHargaBuah])
-                            })
-                    }
-            setStatusForm("create")
-			setSelectedId(0)
-			setInput({
-				name: "",
-				price: "",
-				weight: ""
-			})
-		}
+		}))
 	}
 
-    const handleEdit = (event) => {
-		let id = Number(event.target.value)
-		console.log(dataHargaBuah)
-		let buah = dataHargaBuah.find(x => x.id === id)
-		setInput({name: buah.name, price: buah.price, weight: buah.weight})
-		setSelectedId(id)
-		setStatusForm("edit")
-	}
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        
+        if (statusForm == "CREATE") {
+            if (input['name'].replace(/\s/g, "") !== "") {
 
-    const handleDelete = (event) => {
-		let id = Number(event.target.value)
-		let newDataBuah = dataHargaBuah.filter(el => el.id !== id)
+                axios.post(`http://backendexample.sanbercloud.com/api/fruits`, input)
+                .then(res => {
+                    setDataHargaBuah([...dataHargaBuah, {name: res.data.name, price: res.data.price, weight: res.data.weight}])
+                })
 
-		axios.delete(`http://backendexample.sanbercloud.com/api/fruits/${id}`)
-			.then(res => {
-				console.log(res)
-			})
-		setDataHargaBuah([...newDataBuah])
-	}
+            }
+        } else if (statusForm == "EDIT") {
+            if (input['name'].replace(/\s/g, "") !== "") {
+                axios.put(`http://backendexample.sanbercloud.com/api/fruits/${selectedId}`, input)
+                .then(res => {
+                    let selectedBuah = dataHargaBuah.find(el => el.id === selectedId)
+                    console.log(selectedBuah)
+                    selectedBuah['name'] = input.name
+                    selectedBuah['price'] = input.price
+                    selectedBuah['weight'] = input.weight
+                    setDataHargaBuah(...[dataHargaBuah])
+                })
+            }
+        }
 
-    useEffect(() =>{
-		if(dataHargaBuah === null) {
-			axios.get(`http://backendexample.sanbercloud.com/api/fruits`)
-				.then(res => {
-					setDataHargaBuah(res.data.map(el => {return {id:el.id, name:el.name, price:el.price, weight:el.weight }}))
-				})
-		}
-	},[dataHargaBuah] )
+        setInput({name: "", price: "", weight:""})
+        setSelectedId(0)
+        setStatusForm("CREATE")
+    }
+
+    const handleEdit = (e) => {
+        let idBuah = parseInt(e.target.value)
+        let buah = dataHargaBuah.find(x => x.id === idBuah)
+
+        setInput({name: buah.name, price: buah.price, weight: buah.weight})
+        setSelectedId(idBuah)
+        setStatusForm("EDIT")
+    }
+
+    const handleDelete = (e) => {
+        let idBuah = parseInt(e.target.value)
+        let deletedDaftarBuah = dataHargaBuah.filter(el => el.id != idBuah)
+        axios.delete(`http://backendexample.sanbercloud.com/api/fruits/${idBuah}`)
+            .then(res => {
+                    console.log('Succesfully deleted: '+ res.data);
+        })
+
+        setDataHargaBuah(deletedDaftarBuah)
+
+
+    }
+
+    useEffect( () => {
+        if(dataHargaBuah===null){
+            axios.get(`http://backendexample.sanbercloud.com/api/fruits`)
+            .then(res => {
+                setDataHargaBuah(res.data.map(el => {return {id: el.id, name:el.name, price:el.price, weight:el.weight}}))
+            })
+        }
+      })
 
     return (
         <>
             
             <h1> Tabel Harga Buah </h1>
             <table>
+                <thead>
                 <tr>
                     <Header name={'No.'} />
                     <Header name={'Buah'} />
@@ -101,34 +103,33 @@ const ListInFunc = () => {
                     <Header name={'Berat'} />
                     <Header name={'Aksi'} />
                 </tr>
-                {dataHargaBuah.map((isi, index) => {
-                    return (
-                        <tr key={index}>
-                            <Cell name={index+1} />
-                            <Cell name={isi.name} />
-                            <Cell name={isi.price} />
-                            <Cell name={isi.weight} />
-                            <td style={{textAlign: "center"}}>
-                                    <button onClick ={handleEdit} value={index}>Edit</button>
-                                    &nbsp;
-                                    <button onClick={handleDelete} value={index}>Delete</button>   
-                            </td>
-                        </tr>
-
-                    )
-                    
-                 })}  
+                </thead>
+                <tbody>
+                {dataHargaBuah !== null && dataHargaBuah.map((isi, index) => {
+                return( <tr key={index}>
+                        <Cell name={index+1} />
+                        <Cell name={isi.name} />
+                        <Cell name={isi.price} />
+                        <Cell name={isi.weight} />
+                        <td style={{textAlign: "center"}}>
+                                <button onClick ={handleEdit} value={isi.id}>Edit</button>
+                                &nbsp;
+                                <button onClick={handleDelete} value={isi.id}>Delete</button>   
+                        </td>
+                        </tr>)})
+                }
+                </tbody>
             </table>
 
             <form onSubmit={handleSubmit}>
-                 <label htmlFor="nama">Nama Buah: </label>
-                 <input type="text" id="nama" name="nama" value={input.nama} onChange={handleChange} placeholder="Nama Buah"/>
+                 <label htmlFor="name">Nama Buah: </label>
+                 <input type="text" id="name" name="name" value={input.name} onChange={handleChange} placeholder="Nama Buah"/>
                  <br/><br/>
-                 <label htmlFor="harga">Harga: </label>
-                 <input type="text" id="harga" name="harga" value={input.harga} onChange={handleChange} placeholder="Harga"/>
+                 <label htmlFor="price">Harga: </label>
+                 <input type="text" id="price" name="price" value={input.price} onChange={handleChange} placeholder="Harga"/>
                  <br /><br/>
-                 <label htmlFor="berat">Berat: </label>
-                 <input type="text" id="berat" name='berat' value={input.berat} onChange={handleChange} placeholder="Berat"/>
+                 <label htmlFor="weight">Berat: </label>
+                 <input type="text" id="weight" name='weight' value={input.weight} onChange={handleChange} placeholder="Berat"/>
                  <br/><br/>
                  <input type="submit" value="Kirim!" />
             </form>
